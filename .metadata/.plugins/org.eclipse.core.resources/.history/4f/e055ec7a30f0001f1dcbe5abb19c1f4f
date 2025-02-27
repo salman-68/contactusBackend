@@ -1,0 +1,5 @@
+package com.connectitvity.me;
+
+public class CartItem {
+
+}

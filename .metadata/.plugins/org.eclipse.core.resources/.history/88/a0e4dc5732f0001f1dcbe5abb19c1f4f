@@ -1,0 +1,48 @@
+package com.connectitvity.controller;
+
+
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.webauthn.management.MapPublicKeyCredentialUserEntityRepository;
+import org.springframework.web.bind.annotation.*;
+
+import com.connectitvity.me.CartItem;
+import com.connectitvity.me.User;
+import com.connectitvity.repository.UserRepository;
+import com.connectitvity.service.CartService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/cart")
+public class CartController {
+    
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // 📌 Get Cart Items for a User
+    @GetMapping("/{username}")
+    public List<CartItem> getCart(@PathVariable String username) {
+        User user = userRepository.findByUsername(username);
+        return cartService.getCartItems(user);
+    }
+
+    // 📌 Add Item to Cart
+    @PostMapping("/{username}/add")
+    public CartItem addToCart(@PathVariable String username, @RequestBody CartItem cartItem) {
+        User user = userRepository.findByUsername(username);
+        cartItem.setUser(user);
+        return cartService.addToCart(cartItem);
+    }
+
+    // 📌 Clear Cart
+    @DeleteMapping("/{username}/clear")
+    public String clearCart(@PathVariable String username) {
+        User user = userRepository.findByUsername(username);
+        cartService.clearCart(user);
+        return "Cart cleared!";
+    }
+}
